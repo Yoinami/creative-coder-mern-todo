@@ -1,6 +1,7 @@
 import './reset.css';
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import useFetch from './hooks/useFetch';
 
 function TaskListItem({ task, remove_task, check_single_task, update_single_task }) {
 
@@ -56,22 +57,31 @@ function TaskListItem({ task, remove_task, check_single_task, update_single_task
 function App() {
 
   const [taskList, setTaskList] = useState([]);
-  const [task_input, setTaskInput] = useState('');
+  let nameRef = useRef();
   const [renderFiliter, setRenderFiliter] = useState('All');
-  console.log(taskList)
+  
+  let { data } = useFetch("http://localhost:3001/todo");
+  console.log(data);
 
-
+  useEffect(() => {
+    if(data) {
+      setTaskList(data);
+      console.log("inside the if statement" + data.toString());
+    };
+  }, [data])
 
   function add_task(e) {
     e.preventDefault();
-    if (task_input === '') return;
+    if (nameRef.current.value === '') return;
+
 
     let new_task = {
-      name: task_input,
+      name: nameRef.current.value,
       isCompleted: false,
       id: Number(Math.floor(Math.random() * 1000).toString() + taskList.length.toString())
     };
     setTaskList([...taskList, new_task]);
+    nameRef.current.value = ''
   }
 
   function remove_task(delete_task_id) {
@@ -98,8 +108,7 @@ function App() {
             type="text"
             className="todo-input"
             placeholder="What do you need to do?"
-            value={task_input}
-            onChange={(e) => setTaskInput(e.target.value)}
+            ref={nameRef}
           />
         </form>
 
