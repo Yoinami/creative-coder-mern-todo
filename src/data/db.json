@@ -1,14 +1,19 @@
 {
   "todo": [
     {
-      "id": 8690,
+      "id": "8690",
       "isCompleted": false,
-      "name": "asdf"
+      "name": "asdfghjkl;"
     },
     {
-      "id": 9690,
-      "isCompleted": false,
-      "name": "asdf"
+      "id": "7902",
+      "name": "test 1",
+      "isCompleted": false
+    },
+    {
+      "id": "[object Undefined]",
+      "name": "asdf",
+      "isCompleted": false
     }
   ]
 }

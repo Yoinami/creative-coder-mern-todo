@@ -1,28 +1,49 @@
 import React, { useState } from 'react';
 
-function TaskListItem({ task, remove_task, check_single_task, update_single_task }) {
+function TaskListItem({ task, remove_task, update_single_task }) {
 
     const [focused, setFocused] = useState(false);
     const [name, setName] = useState(task.name)
 
+    let check_single_task = task => {
+        task = { ...task, isCompleted: !task.isCompleted }
+        update_single_task(task)
+    }
+
+    let change_task_name = task => {
+        task = { ...task, name }
+        update_single_task(task)
+    }
+
+    let handleSubmit = e => {
+        e.preventDefault();
+        change_task_name(task);
+        setFocused(false)
+    }
+
     return (
         <li className="todo-item-container">
             <div className="todo-item">
-                <input type="checkbox" checked={task.isCompleted} onChange={() => check_single_task(task.id)} />
-                {focused ?
-                    (<input
-                        type="text"
-                        className="todo-input"
-                        value={name}
-                        onBlur={() => {
-                            update_single_task(name, task.id)
-                            setFocused(false);
-                        }}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    ) :
+                <input type="checkbox" checked={task.isCompleted} onChange={() => check_single_task(task)} />
+                {focused &&
+                    (<form onSubmit={e => handleSubmit(e)}>
+                        <input
+                            type="text"
+                            className="todo-input"
+                            value={name}
+                            onBlur={() => {
+                                change_task_name(name, task)
+                                setFocused(false);
+                            }}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </form>
+                    )
+                }
+                {
+                    !focused &&
                     (<span
-                        onClick={() => setFocused(true)}
+                        onDoubleClick={() => setFocused(true)}
                         className={`todo-item-label ${task.isCompleted ? "completed-todo-item" : ""}`}>
                         {name}
                     </span>
@@ -51,34 +72,21 @@ function TaskListItem({ task, remove_task, check_single_task, update_single_task
 }
 
 
-export default function TaskList({taskList, renderFiliter, setTaskList}) {
+export default function TaskList({ taskList, renderFiliter, remove_task, check_single_task, update_single_task }) {
 
-      function remove_task(delete_task_id) {
-        setTaskList(taskList.filter(task => task.id !== delete_task_id));
-      }
-    
-      function check_single_task(check_task_id) {
-        setTaskList(taskList.map(value => (value.id === check_task_id) ? { ...value, isCompleted: !value.isCompleted } : value
-        ));
-      };
-    
-      function update_single_task(updated_value, update_task_id) {
-        setTaskList(taskList.map(value => (value.id === update_task_id) ? { ...value, name: updated_value } : value
-        ));
-      }
 
     return (
-    <ul className="todo-list">
-        {
-            taskList.filter(task => {
-                if (renderFiliter === 'All') return true;
-                else if (renderFiliter === 'Active' && task.isCompleted === false) return true;
-                else if (renderFiliter === 'Completed' && task.isCompleted === true) return true;
-                return false;
-            }).map((task, index) => {
-                return <TaskListItem key={task.id} task={task} remove_task={remove_task} check_single_task={check_single_task} update_single_task={update_single_task} />
-            })
-        }
-    </ul>
+        <ul className="todo-list">
+            {
+                taskList.filter(task => {
+                    if (renderFiliter === 'All') return true;
+                    else if (renderFiliter === 'Active' && task.isCompleted === false) return true;
+                    else if (renderFiliter === 'Completed' && task.isCompleted === true) return true;
+                    return false;
+                }).map((task, index) => {
+                    return <TaskListItem key={task.id} task={task} remove_task={remove_task} check_single_task={check_single_task} update_single_task={update_single_task} />
+                })
+            }
+        </ul>
     )
 }
