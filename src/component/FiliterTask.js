@@ -1,4 +1,9 @@
-export default function FiliterTask({ setTaskList, taskList, setRenderFiliter, renderFiliter }) {
+export default function FiliterTask({ taskList, setRenderFiliter, renderFiliter, remove_task }) {
+
+    function clearCompleted() {
+        taskList.filter(task => task.isCompleted == true).map(task => remove_task(task.id))
+    }
+
     return (
         <div className="other-buttons-container">
             <div>
@@ -20,10 +25,7 @@ export default function FiliterTask({ setTaskList, taskList, setRenderFiliter, r
                 </button>
             </div>
             <div>
-                <button className="button" onClick={() => {
-                    setTaskList(
-                        taskList.filter(task => task.isCompleted === false))
-                }}>Clear completed</button>
+                <button className="button" onClick={clearCompleted}>Clear completed</button>
             </div>
         </div>
     )

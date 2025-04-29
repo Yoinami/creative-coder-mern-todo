@@ -29,7 +29,7 @@ function App() {
     let new_task = {
       name: nameRef.current.value,
       isCompleted: false,
-      id: toString(Math.floor(Math.random() * 1000).toString() + taskList.length.toString())
+      id: Math.floor(Math.random() * 1000).toString() + taskList.length.toString()
     };
 
     //Server site
@@ -52,7 +52,7 @@ function App() {
       method: "DELETE"
     })
     //client side
-    setTaskList(taskList.filter(task => task.id !== delete_task_id));
+    setTaskList(prev => prev.filter(task => task.id !== delete_task_id));
   }
 
   function update_single_task(task) {
@@ -65,7 +65,7 @@ function App() {
       body: JSON.stringify(task)
     }).then(res => {
       //Client site
-      setTaskList(taskList.map(value => (value.id === task.id) ? task : value));
+      setTaskList(prev => prev.map(value => (value.id === task.id) ? {...task} : value));
     });
   }
 
@@ -74,9 +74,9 @@ function App() {
       <div className="todo-app">
         <TaskInput add_task={add_task} nameRef={nameRef} />
         <TaskList taskList={taskList} renderFiliter={renderFiliter} remove_task={remove_task} update_single_task={update_single_task} />
-        <CheckAllAndRemaining taskList={taskList} setTaskList={setTaskList} />
+        <CheckAllAndRemaining taskList={taskList} setTaskList={setTaskList} update_single_task={update_single_task} />
 
-        <FiliterTask taskList={taskList} setTaskList={setTaskList} setRenderFiliter={setRenderFiliter} renderFiliter={renderFiliter} />
+        <FiliterTask taskList={taskList} setTaskList={setTaskList} setRenderFiliter={setRenderFiliter} renderFiliter={renderFiliter} remove_task={remove_task} />
       </div>
     </div>
   );
